@@ -2,47 +2,71 @@
 @using Refit
 @using ScanQrShared
 @using System.Diagnostics
+@using System.Threading.Channels
+@using Bloc.Models
+@using ScanQr.App.Models
+@using ScanQr.App.States
 @inject HttpClient HttpClient
-
+@implements IDisposable
+@typeparam T
 <div>
     @ChildContent
 </div>
 
 @code{
     [Parameter] public RenderFragment ChildContent { get; set; }
-
-    private HubConnection hubConnection { get; set; }
-    
+    [Parameter] public ChannelInformation Information { get; set; }
+    [Parameter] public required OnMessageReceived<T> OnMessageRecieved { get; set; }
+    private BlocBuilder<MessageListenerCubit<T>, MessageListenerState>? messageListnerBuilder { get; set; }
+    private HubConnection hubConnection;
     protected override async Task OnInitializedAsync()
     {
         try
         {
+            // messageListnerBuilder = new BlocBuilder<MessageListenerCubit<T>, MessageListenerState>(new MessageListenerCubit<T>(Information));
+            // messageListnerBuilder!.Bloc.OnStateChanged += ListToMessages;
+            // messageListnerBuilder!.Bloc.Listen();
             hubConnection = new HubConnectionBuilder()
-                .WithUrl("http://172.16.1.150:5026/Chat")
+                .WithUrl("https://172.16.1.150:7241/Chat")
                 .Build();
-
+            
             hubConnection.On<Person>("ReceiveMessage", ListenToMessages);
-
+            
             await hubConnection.StartAsync();
             // You can send a message like this
             // await hubConnection.SendAsync("ReceiveMessage", "Hello from the client");
-            HttpClient.BaseAddress = new Uri("http://172.16.1.150:5026/persons");
-            var qrCodeVerificationService = RestService.For<IQrCodeVerificationClient>(HttpClient);
-
-            qrCodeVerificationService.SendPersonInformationMessage();
+            // HttpClient.BaseAddress = new Uri("http://172.16.1.150:5026/persons");
+            // var qrCodeVerificationService = RestService.For<IQrCodeVerificationClient>(HttpClient);
+            //
+            // qrCodeVerificationService.SendPersonInformationMessage();
         }
         catch (Exception ex)
         {
             // Log or display the error message
             Console.WriteLine(ex.Message);
         }
-
     }
-    
+
+    private async void ListToMessages(MessageListenerState state)
+    {
+        if (state is MessageListenerReceived<T>)
+        {
+            //Todo show notifications
+            T message = (state as MessageListenerReceived<T>)!.Message;
+            OnMessageRecieved(message);
+        }
+    }
+
     private void ListenToMessages(Person person)
     {
         Trace.WriteLine(person.FirstName);
         Console.WriteLine(person.LastName);
+    }
+
+
+    public void Dispose()
+    {
+        messageListnerBuilder.Bloc.Dispose();
     }
 
 }

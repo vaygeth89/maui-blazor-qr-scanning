@@ -1,9 +1,12 @@
 ﻿@page "/"
 @using Bloc.Models
+@using Plugin.LocalNotification
 @using ScanQr.App.States
 @using ScanQr.App.Components.Widgets
+@using ScanQr.App.Models
+@using ScanQrShared
 @inject HttpClient HttpClient
-<MessageListener>
+<MessageListener T="Person" Information="@(new ChannelInformation("ReceiveMessage", "http://172.16.1.150:5026/Chat"))" OnMessageRecieved="@(OnMessageReceived)">
     <div>
         <h1>Hello, world!</h1>
         Welcome to your new app.
@@ -27,7 +30,6 @@
 {
     [Inject] public required BlocBuilder<BarCodeScanningCubit, BarCodeScanState> BarCodeBuilder { get; set; }
 
-
     protected override void OnInitialized()
     {
         BarCodeBuilder.Bloc.OnStateChanged += ListenToBarCodeChanges;
@@ -41,6 +43,22 @@
             //Todo
             StateHasChanged();
         }
+    }
+
+    private async void OnMessageReceived(Person person)
+    {
+        var notificationRequest = new NotificationRequest()
+        {
+            NotificationId = person.GetId(),
+            Title = person.Title(),
+            Description = person.Description(),
+            CategoryType = NotificationCategoryType.Status,
+            Schedule = new()
+            {
+                NotifyTime = DateTime.Now, RepeatType = NotificationRepeat.No
+            }
+        };
+        await LocalNotificationCenter.Current.Show(notificationRequest);
     }
 
     void OpenScanQrCode()
