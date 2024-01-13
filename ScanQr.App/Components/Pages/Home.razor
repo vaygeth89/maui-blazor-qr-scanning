@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using Bloc.Models
+@using ScanQr.App.Repositories
 @using ScanQr.App.States
 
 <h1>Hello, world!</h1>
@@ -23,7 +24,7 @@ Welcome to your new app.
 {
     [Inject]
     public required BlocBuilder<BarCodeScanningCubit, BarCodeScanState> BarCodeBuilder { get; set; }
-
+    
     protected override void OnInitialized()
     {
         BarCodeBuilder.Bloc.OnStateChanged += ListenToBarCodeChanges;

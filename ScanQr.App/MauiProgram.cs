@@ -1,5 +1,10 @@
-﻿using Bloc.Models;
+﻿using System.Text.Json;
+using Bloc.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Refit;
+using ScanQr.App.Configurations;
+using ScanQr.App.Repositories;
 using ScanQr.App.States;
 using ZXing.Net.Maui.Controls;
 
@@ -18,14 +23,17 @@ namespace ScanQr.App
                 .UseBarcodeReader()
                 ;
 
-
+            AppSettings appSettings = new AppSettingsDictionary(true).AppSettings;
             builder.Services.AddMauiBlazorWebView();
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
             builder.Logging.AddDebug();
 #endif
-
+            
+            builder.Services
+                .AddRefitClient<IQrCodeVerification>()
+                .ConfigureHttpClient(c => c.BaseAddress = new Uri(appSettings.Endpoints.First().QrCode));
             var app = builder.Build();
             return app;
         }

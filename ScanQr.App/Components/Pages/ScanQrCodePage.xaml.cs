@@ -14,7 +14,7 @@ public partial class ScanQrCodePage
         _barCodeBuilder.Bloc.OnStateChanged += ListenToBarCodeChanges;
         InitializeComponent();
 
-        cameraBarcodeReaderView.Options = new ZXing.Net.Maui.BarcodeReaderOptions
+        cameraBarcodeReaderView.Options = new BarcodeReaderOptions
         {
             Formats = BarcodeFormats.TwoDimensional,
             AutoRotate = true,
@@ -26,11 +26,12 @@ public partial class ScanQrCodePage
     {
         if (state is BarCodeScanDetected)
         {
+            cameraBarcodeReaderView.IsDetecting = false;
             await Navigation.PopAsync();
         }
     }
 
-    protected async void BarcodesDetected(object sender, ZXing.Net.Maui.BarcodeDetectionEventArgs e)
+    protected async void BarcodesDetected(object sender, BarcodeDetectionEventArgs e)
     {
         {
             Dispatcher.Dispatch(async () =>
@@ -40,8 +41,6 @@ public partial class ScanQrCodePage
                     Console.WriteLine($"Barcodes: {barcode.Format} -> {barcode.Value}");
                     await _barCodeBuilder.Bloc.ScanDetected(barcode.Value);
                 }
-
-                cameraBarcodeReaderView.IsDetecting = false;
             });
         }
     }
