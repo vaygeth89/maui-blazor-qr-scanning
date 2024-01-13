@@ -21,7 +21,7 @@
                 .WithUrl("http://172.16.1.150:5026/Chat")
                 .Build();
 
-            hubConnection.On<string,string>("ReceiveMessage", ListenToMessages);
+            hubConnection.On<Person>("ReceiveMessage", ListenToMessages);
 
             await hubConnection.StartAsync();
             // You can send a message like this
@@ -39,10 +39,10 @@
 
     }
     
-    private void ListenToMessages(string message,string secondMessage)
+    private void ListenToMessages(Person person)
     {
-        Trace.WriteLine(secondMessage);
-        Console.WriteLine(message);
+        Trace.WriteLine(person.FirstName);
+        Console.WriteLine(person.LastName);
     }
 
 }

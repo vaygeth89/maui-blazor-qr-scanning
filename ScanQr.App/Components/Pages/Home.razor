@@ -1,12 +1,9 @@
 ﻿@page "/"
 @using Bloc.Models
-@using Microsoft.AspNetCore.SignalR.Client
-@using Refit
 @using ScanQr.App.States
-@using ScanQrShared
 @using ScanQr.App.Components.Widgets
 @inject HttpClient HttpClient
-<MessageListner>
+<MessageListener>
     <div>
         <h1>Hello, world!</h1>
         Welcome to your new app.
@@ -24,7 +21,7 @@
             </FluentBodyContent>
         </FluentLayout>
     </div>
-</MessageListner>
+</MessageListener>
 
 @code
 {

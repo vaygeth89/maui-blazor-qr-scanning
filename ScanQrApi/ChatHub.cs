@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using ScanQrShared;
 
 namespace ScanQrApi;
 
 public class ChatHub : Hub
 {
-    public void Send(string user, string message)
+    public void Send(Person person)
     {
-        // Call the "OnMessage" method to update clients.
-        Clients.All.SendAsync("ReceiveMessage", user, message);
+        Clients.All.SendAsync("ReceiveMessage", person);
     }
 }

@@ -22,7 +22,7 @@ public class QrCodeVerification : IQrCodeVerification
     public async Task<Person> SendPersonInformationMessage()
     {
         await Task.Delay(TimeSpan.FromSeconds(5));
-        await _hubContext.Clients.All.SendAsync("ReceiveMessage", "John","Customer Verified");
+        await _hubContext.Clients.All.SendAsync("ReceiveMessage", _persons.First());
         return _persons.First();
     }
 

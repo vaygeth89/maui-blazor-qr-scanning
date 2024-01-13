@@ -8,30 +8,31 @@ namespace ScanQr.App.States;
 class MessageListenerCubit<T> : Cubit<MessageListenerState>
 {
     private HubConnection _hubConnection;
-
-    public MessageListenerCubit(string url) : base(new MessageListenerOn())
+    private string Channel { get; set; }
+    private string Url { get; set; }
+    public MessageListenerCubit(string channel,string url) : base(new MessageListenerOn())
     {
+        Channel = channel;
+        Url = url;
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl(url)
+            .WithUrl(Url)
             .Build();
-        ConnectListner<T>(ListenToReceivedMessages);
+        ConnectListener(ListenToReceivedMessages);
+    }
+
+    private async void ConnectListener(Action<T> handleMessage)
+    {
+        _hubConnection.On(Channel, handleMessage);
+        await _hubConnection.StartAsync();
     }
 
     private void ListenToReceivedMessages(T message)
     {
         Emit(new MessageListenerReceived<T>(message));
     }
-
-    private async void ConnectListner<T>(Action<T> handleMessage)
-    {
-        _hubConnection.On("ReceiveMessage", handleMessage);
-
-        await _hubConnection.StartAsync();
-    }
-
     public async Task SendAsync(T message)
     {
-        await _hubConnection.SendAsync("SendMessage", message);
+        await _hubConnection.SendAsync(Channel, message);
     }
 
     public override void Dispose()
