@@ -72,7 +72,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Listener\" />
+      <Folder Include="Repositories\" />
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\ScanQrShared\ScanQrShared.csproj" />
+    </ItemGroup>
+
 
 </Project>

@@ -1,34 +1,71 @@
 ﻿@page "/"
 @using Bloc.Models
-@using ScanQr.App.Repositories
+@using Microsoft.AspNetCore.SignalR.Client
+@using Refit
 @using ScanQr.App.States
-
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
-<FluentLayout>
-    <FluentBodyContent>
-        @if (BarCodeBuilder.State is BarCodeScanInitialState)
-        {
-            <FluentButton Title="Scan Qr Code" OnClick="@OpenScanQrCode">Scan Qr</FluentButton>
-        }
-        @if (BarCodeBuilder.State is BarCodeScanDetected)
-        {
-            var barcode = (BarCodeBuilder.State as BarCodeScanDetected)!.BarCode;
-            <FluentLabel>Bar Code @barcode</FluentLabel>
-        }
-    </FluentBodyContent>
-</FluentLayout>
+@using ScanQrShared
+@inject HttpClient HttpClient
+<div>
+    <h1>Hello, world!</h1>
+    Welcome to your new app.
+    <FluentLayout>
+        <FluentBodyContent>
+            @if (BarCodeBuilder.State is BarCodeScanInitialState)
+            {
+                <FluentButton Title="Scan Qr Code" OnClick="@OpenScanQrCode">Scan Qr</FluentButton>
+            }
+            @if (BarCodeBuilder.State is BarCodeScanDetected)
+            {
+                var barcode = (BarCodeBuilder.State as BarCodeScanDetected)!.BarCode;
+                <FluentLabel>Bar Code @barcode</FluentLabel>
+            }
+        </FluentBodyContent>
+    </FluentLayout>
+</div>
 
 @code
 {
-    [Inject]
-    public required BlocBuilder<BarCodeScanningCubit, BarCodeScanState> BarCodeBuilder { get; set; }
-    
+    [Inject] public required BlocBuilder<BarCodeScanningCubit, BarCodeScanState> BarCodeBuilder { get; set; }
+
+    private HubConnection hubConnection { get; set; }
+
     protected override void OnInitialized()
     {
         BarCodeBuilder.Bloc.OnStateChanged += ListenToBarCodeChanges;
         base.OnInitialized();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            hubConnection = new HubConnectionBuilder()
+                .WithUrl("http://172.16.1.150:5026/Chat")
+                .Build();
+
+            hubConnection.On<string,string>("ReceiveMessage", ListenToMessages);
+
+            await hubConnection.StartAsync();
+            // You can send a message like this
+            // await hubConnection.SendAsync("ReceiveMessage", "Hello from the client");
+            HttpClient.BaseAddress = new Uri("http://172.16.1.150:5026/persons");
+            var qrCodeVerificationService = RestService.For<IQrCodeVerificationClient>(HttpClient);
+
+            qrCodeVerificationService.SendPersonInformationMessage();
+        }
+        catch (Exception ex)
+        {
+            // Log or display the error message
+            Console.WriteLine(ex.Message);
+        }
+
+        ;
+    }
+
+    private void ListenToMessages(string message,string secondMessage)
+    {
+        Console.WriteLine(message);
+        throw new NotImplementedException();
     }
 
     private void ListenToBarCodeChanges(BarCodeScanState state)

@@ -36,7 +36,7 @@ public class AppSettingsDictionary
             {
                 new Endpoint
                 {
-                    QrCode = "https://jsonplaceholder.typicode.com/todos/"
+                    QrCode = "http://172.16.1.150:5026/persons"
                 }
             },
             ApiKeys = new() { }
@@ -51,7 +51,7 @@ public class AppSettingsDictionary
             {
                 new Endpoint
                 {
-                    QrCode = ""
+                    QrCode = "http://172.16.1.150:5026/persons"
                 }
             },
             ApiKeys = new() { }

@@ -1,11 +1,9 @@
-﻿using System.Text.Json;
-using Bloc.Models;
-using Microsoft.Extensions.Configuration;
+﻿using Bloc.Models;
 using Microsoft.Extensions.Logging;
 using Refit;
 using ScanQr.App.Configurations;
-using ScanQr.App.Repositories;
 using ScanQr.App.States;
+using ScanQrShared;
 using ZXing.Net.Maui.Controls;
 
 namespace ScanQr.App
@@ -17,11 +15,11 @@ namespace ScanQr.App
             var builder = MauiApp.CreateBuilder();
             builder.Services.AddScoped(sp =>
                 new BlocBuilder<BarCodeScanningCubit, BarCodeScanState>(new BarCodeScanningCubit()));
-            builder.Services.AddSingleton(sp =>
-                new BlocBuilder<MessageListenerCubit<QrVerificationMessage>, MessageListenerState>(new(
-                    //Todo add url
-                    ""
-                )));
+            // builder.Services.AddSingleton(sp =>
+            //     new BlocBuilder<MessageListenerCubit<QrVerificationMessage>, MessageListenerState>(new(
+            //         //Todo add url
+            //         ""
+            //     )));
             builder
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts => { fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"); })

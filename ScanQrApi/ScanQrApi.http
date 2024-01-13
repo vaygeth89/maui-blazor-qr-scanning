@@ -1,0 +1,6 @@
+@ScanQrApi_HostAddress = http://localhost:5026
+
+GET {{ScanQrApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
