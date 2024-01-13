@@ -66,6 +66,9 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
         <PackageReference Include="Refit" Version="7.0.0" />
         <PackageReference Include="Refit.HttpClientFactory" Version="7.0.0" />
+        <PackageReference Include="Shiny.Hosting.Maui" Version="3.2.2" />
+        <PackageReference Include="Shiny.Notifications" Version="3.2.2" />
+        <PackageReference Include="Shiny.Push" Version="3.2.2" />
         <PackageReference Include="Vaygeth.Bloc" Version="1.0.3" />
         <PackageReference Include="Vaygeth.Bloc.Blazor" Version="1.0.6" />
         <PackageReference Include="ZXing.Net.Maui.Controls" Version="0.4.0" />
