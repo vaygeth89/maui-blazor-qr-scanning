@@ -2,7 +2,6 @@
 
 namespace ScanQr.App.Repositories;
 
-
 public interface IQrCodeVerification
 {
     [Get("verify-qr-code")]
@@ -10,3 +9,7 @@ public interface IQrCodeVerification
 }
 
 public record ResponseStatus(bool IsSuccessful);
+
+public record QrVerificationMessage(bool IsSuccessful, Person Person);
+
+public record Person(string FirstName, string LastName);

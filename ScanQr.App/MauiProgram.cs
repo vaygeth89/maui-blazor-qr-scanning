@@ -17,11 +17,15 @@ namespace ScanQr.App
             var builder = MauiApp.CreateBuilder();
             builder.Services.AddScoped(sp =>
                 new BlocBuilder<BarCodeScanningCubit, BarCodeScanState>(new BarCodeScanningCubit()));
+            builder.Services.AddSingleton(sp =>
+                new BlocBuilder<MessageListenerCubit<QrVerificationMessage>, MessageListenerState>(new(
+                    //Todo add url
+                    ""
+                )));
             builder
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts => { fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"); })
-                .UseBarcodeReader()
-                ;
+                .UseBarcodeReader();
 
             AppSettings appSettings = new AppSettingsDictionary(true).AppSettings;
             builder.Services.AddMauiBlazorWebView();
@@ -30,7 +34,7 @@ namespace ScanQr.App
             builder.Services.AddBlazorWebViewDeveloperTools();
             builder.Logging.AddDebug();
 #endif
-            
+
             builder.Services
                 .AddRefitClient<IQrCodeVerification>()
                 .ConfigureHttpClient(c => c.BaseAddress = new Uri(appSettings.Endpoints.First().QrCode));
