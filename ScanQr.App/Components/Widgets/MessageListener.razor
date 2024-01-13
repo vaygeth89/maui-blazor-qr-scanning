@@ -19,21 +19,18 @@
     [Parameter] public required OnMessageReceived<T> OnMessageRecieved { get; set; }
     private BlocBuilder<MessageListenerCubit<T>, MessageListenerState>? messageListnerBuilder { get; set; }
     private HubConnection hubConnection;
+
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            // messageListnerBuilder = new BlocBuilder<MessageListenerCubit<T>, MessageListenerState>(new MessageListenerCubit<T>(Information));
-            // messageListnerBuilder!.Bloc.OnStateChanged += ListToMessages;
-            // messageListnerBuilder!.Bloc.Listen();
-            hubConnection = new HubConnectionBuilder()
-                .WithUrl("https://172.16.1.150:7241/Chat")
-                .Build();
-            
-            hubConnection.On<Person>("ReceiveMessage", ListenToMessages);
-            
-            await hubConnection.StartAsync();
-            // You can send a message like this
+            messageListnerBuilder = new BlocBuilder<MessageListenerCubit<T>, MessageListenerState>(new MessageListenerCubit<T>(Information));
+            if (messageListnerBuilder.State is MessageListenerInitial)
+            {
+                messageListnerBuilder!.Bloc.OnStateChanged += ListToMessages;
+                await messageListnerBuilder!.Bloc.Listen();
+            }
+
             // await hubConnection.SendAsync("ReceiveMessage", "Hello from the client");
             // HttpClient.BaseAddress = new Uri("http://172.16.1.150:5026/persons");
             // var qrCodeVerificationService = RestService.For<IQrCodeVerificationClient>(HttpClient);
@@ -42,7 +39,6 @@
         }
         catch (Exception ex)
         {
-            // Log or display the error message
             Console.WriteLine(ex.Message);
         }
     }
@@ -51,7 +47,6 @@
     {
         if (state is MessageListenerReceived<T>)
         {
-            //Todo show notifications
             T message = (state as MessageListenerReceived<T>)!.Message;
             OnMessageRecieved(message);
         }
@@ -66,7 +61,7 @@
 
     public void Dispose()
     {
-        messageListnerBuilder.Bloc.Dispose();
+        messageListnerBuilder!.Bloc.Dispose();
     }
 
 }

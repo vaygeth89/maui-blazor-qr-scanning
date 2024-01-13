@@ -10,7 +10,7 @@ class MessageListenerCubit<T> : Cubit<MessageListenerState>
     private HubConnection _hubConnection;
     private ChannelInformation _Information { get; set; }
 
-    public MessageListenerCubit(ChannelInformation information) : base(new MessageListenerOn())
+    public MessageListenerCubit(ChannelInformation information) : base(new MessageListenerInitial())
     {
         _Information = information;
         _hubConnection = new HubConnectionBuilder()
@@ -43,7 +43,7 @@ class MessageListenerCubit<T> : Cubit<MessageListenerState>
         Emit(new MessageListenerClosed());
     }
 
-    public async void Listen()
+    public async Task Listen()
     {
         await ConnectListener(ListenToReceivedMessages);
     }
@@ -51,6 +51,7 @@ class MessageListenerCubit<T> : Cubit<MessageListenerState>
 
 public abstract record MessageListenerState() : BlocState;
 
+public record MessageListenerInitial() : MessageListenerState;
 public record MessageListenerOn() : MessageListenerState;
 
 public record MessageListenerReceived<T>(T Message) : MessageListenerOn;
