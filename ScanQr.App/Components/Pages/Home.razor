@@ -1,0 +1,47 @@
+﻿@page "/"
+@using Bloc.Models
+@using ScanQr.App.States
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+<FluentLayout>
+    <FluentBodyContent>
+        @if (BarCodeBuilder.State is BarCodeScanInitialState)
+        {
+            <FluentButton Title="Scan Qr Code" OnClick="@OpenScanQrCode">Scan Qr</FluentButton>
+        }
+        @if (BarCodeBuilder.State is BarCodeScanDetected)
+        {
+            var barcode = (BarCodeBuilder.State as BarCodeScanDetected)!.BarCode;
+            <FluentLabel>Bar Code @barcode</FluentLabel>
+        }
+    </FluentBodyContent>
+</FluentLayout>
+
+@code
+{
+    [Inject]
+    public required BlocBuilder<BarCodeScanningCubit, BarCodeScanState> BarCodeBuilder { get; set; }
+
+    protected override void OnInitialized()
+    {
+        BarCodeBuilder.Bloc.OnStateChanged += ListenToBarCodeChanges;
+        base.OnInitialized();
+    }
+
+    private void ListenToBarCodeChanges(BarCodeScanState state)
+    {
+        if (state is BarCodeScanDetected)
+        {
+            //Todo
+            StateHasChanged();
+        }
+    }
+
+    void OpenScanQrCode()
+    {
+        Console.WriteLine("Clicked");
+        App.Current.MainPage.Navigation.PushAsync(new ScanQrCodePage(BarCodeBuilder));
+    }
+}
