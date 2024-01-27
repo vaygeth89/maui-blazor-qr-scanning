@@ -21,6 +21,8 @@
                     var barcode = (BarCodeBuilder.State as BarCodeScanDetected)!.BarCode;
                     <FluentLabel>Bar Code @barcode</FluentLabel>
                 }
+
+                <FluentButton Title="Todos Page" OnClick="@NavigateToTodosPage"/>
             </FluentBodyContent>
         </FluentLayout>
     </div>
@@ -65,5 +67,10 @@
     {
         Console.WriteLine("Clicked");
         App.Current.MainPage.Navigation.PushAsync(new ScanQrCodePage(BarCodeBuilder));
+    }
+
+    private void NavigateToTodosPage()
+    {
+        App.Current.MainPage.Navigation.PushAsync(new TodoPage());
     }
 }

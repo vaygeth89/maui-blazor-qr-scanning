@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pages="clr-namespace:ScanQr.App.Components.Pages"
+             x:Class="ScanQr.App.Components.Pages.TodosList">
+    <ContentView.Content>
+        <VerticalStackLayout>
+            <VerticalStackLayout.Children>
+                <pages:TodoItem />
+            </VerticalStackLayout.Children>
+        </VerticalStackLayout>
+    </ContentView.Content>
+</ContentView>
